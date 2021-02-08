@@ -9,7 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GroupUp">
-        <activity android:name=".MainActivity">
+        <activity android:name=".EventActivity"></activity>
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/forgotpassword_title"></activity>
+        <activity
+            android:name=".CreateAccountActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/createaccount_title"/>
+        <activity android:name=".MainActivity"
+            android:label="@string/signin_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

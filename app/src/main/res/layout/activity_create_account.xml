@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateAccountActivity">
+
+    <TextView
+        android:id="@+id/GroupUpTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/title"
+        android:textSize="76sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_input_ca"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="@string/e_mail"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusTopStart="24dp"
+        app:endIconMode="custom"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/username_input_ca"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:startIconContentDescription="email icon"
+        app:startIconDrawable="@drawable/email_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email_input_ca_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/username_input_ca"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="@string/username_text"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusTopStart="24dp"
+        app:endIconMode="custom"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/password_input_ca"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:startIconContentDescription="username icon"
+        app:startIconDrawable="@drawable/username_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username_input_ca_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_input_ca"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusTopStart="24dp"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/password_reinput_ca"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:startIconContentDescription="password icon"
+        app:startIconDrawable="@drawable/password_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_input_ca_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_reinput_ca"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        app:boxCornerRadiusBottomEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusTopStart="24dp"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/createAccountButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:startIconContentDescription="password icon"
+        app:startIconDrawable="@drawable/password_icon">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_reinput_ca_ed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/confirm_password_text"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/createAccountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:onClick="submitAccountCreationRequest"
+        android:text="@string/create_account_button_text"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/copyrightNotice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/copyrightNotice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/groupup_2021"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

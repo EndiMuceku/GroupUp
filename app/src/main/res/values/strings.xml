@@ -7,4 +7,12 @@
     <string name="forgotpasstext">Forgotten your password? Reset it here.</string>
     <string name="groupup_2021">© GroupUp! 2021</string>
     <string name="title">GroupUp!</string>
+    <string name="reset_password_button_text">Reset Password</string>
+    <string name="create_account_button_text">Create Account</string>
+    <string name="confirm_password_text">Confirm Password</string>
+    <string name="username_text">Username</string>
+    <string name="temp_long_text">You\'re now signed in, feel free to close the app to go back to the log in screen, unfortunately there isnt any other app functionality developed yet! I am working on adding new features soon though, be sure to look forward to it in the next build!</string>
+    <string name="signin_title">Sign in</string>
+    <string name="createaccount_title">Create Account</string>
+    <string name="forgotpassword_title">Reset Password</string>
 </resources>

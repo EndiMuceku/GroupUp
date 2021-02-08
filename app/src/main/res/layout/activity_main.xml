@@ -25,6 +25,7 @@
         app:startIconDrawable="@drawable/email_icon">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email_input_ed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -48,6 +49,7 @@
         app:startIconDrawable="@drawable/password_icon">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_input_ed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
@@ -59,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:onClick="logInButtonClicked"
         android:text="@string/log_in"
         app:cornerRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +73,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
+        android:onClick="startCreateAccountActivity"
         android:text="@string/noaccounttext"
+        android:textColor="#1976d2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logInButton" />
@@ -80,7 +85,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:onClick="startForgotPasswordActivity"
         android:text="@string/forgotpasstext"
+        android:textColor="#1976d2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/noAccountTextView" />
@@ -99,9 +106,9 @@
         android:id="@+id/GroupUpTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text="@string/title"
         android:textSize="76sp"
-        app:layout_constraintBottom_toTopOf="@+id/email_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
