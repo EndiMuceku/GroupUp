@@ -67,16 +67,20 @@ public class MainActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                startActivity(eventActivityIntent);
-                                finish();
+                                if (user.isEmailVerified()){
+                                    startActivity(eventActivityIntent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(context, "Authentication failed. Please verify your email first.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(context, "Authentication failed. Incorrect log in details supplied.",
                                         Toast.LENGTH_LONG).show();
-                                // ...
                             }
 
-                            // ...
                         }
                     });
         } else {

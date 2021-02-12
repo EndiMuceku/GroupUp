@@ -59,8 +59,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         mPassword2Input = (TextInputLayout) findViewById(R.id.password_reinput_ca);
         password2 = mPassword2Input.getEditText().getText().toString();
 
-        Intent eventActivityIntent = new Intent(this, EventActivity.class);
-
         if(password.equals(password2) && password.length() >= 8 && username.length() >= 5 && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -77,13 +75,20 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    String name = user.getDisplayName();
-                                                    Toast.makeText(context, "Successfully created account for user " + name, Toast.LENGTH_LONG).show();
+
                                                 }
                                             }
                                         });
-                                startActivity(eventActivityIntent);
-                                finish();
+                                user.sendEmailVerification()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    String name = user.getDisplayName();
+                                                    Toast.makeText(context, "Successfully created account for user " + name + ", please verify your email before signing in.", Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        });
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(context, "Authentication failed.",
