@@ -15,4 +15,22 @@
     <string name="signin_title">Sign in</string>
     <string name="createaccount_title">Create Account</string>
     <string name="forgotpassword_title">Reset Password</string>
+    <string name="events_tab_text">Events</string>
+    <string name="groups_tab_text">Groups</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tempGroupFragmentText">Group functionality to be implemented</string>
+    <string name="create_new_event_button_text">Create New Event</string>
+    <string name="createevent_title">Create Event</string>
+    <string name="event_title">Event Title</string>
+    <string name="create_event_button_text">Create Event</string>
+    <string name="event_description">Event Description</string>
+    <string name="date_of_event">Date of Event</string>
+    <string name="address_line_1">Address Line 1</string>
+    <string name="address_line_2">Address Line 2</string>
+    <string name="address_line_3">Address Line 3 (Optional)</string>
+    <string name="dd_mm_yy">dd/mm/yy</string>
+    <string name="postcode">Postcode</string>
+    <string name="location">Location</string>
+    <string name="event_type">Event Type</string>
+    <string name="time_of_event">Time of Event</string>
 </resources>
