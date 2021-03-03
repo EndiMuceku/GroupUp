@@ -33,4 +33,9 @@
     <string name="location">Location</string>
     <string name="event_type">Event Type</string>
     <string name="time_of_event">Time of Event</string>
+    <string name="join_group_button">Join Group</string>
+    <string name="event_card_image_content_description">event card</string>
+    <string name="date_and_time_event_card_text_placeholder">Date and Time</string>
+    <string name="delete_group_button">Delete Group</string>
+    <string name="leave_group_button">Leave Group</string>
 </resources>

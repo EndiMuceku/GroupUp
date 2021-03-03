@@ -39,6 +39,8 @@ public class EventGroup {
 
     }
 
+    public EventGroup() {}
+
     public String getEventTitle() {
         return eventTitle;
     }
@@ -79,9 +81,17 @@ public class EventGroup {
         return eventType;
     }
 
-    public boolean isOwner(String userEmail) {
+    public boolean isCreator(String userEmail) {
         if (userEmail.equals(userMap.values().toArray()[0])) {
             return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isMember(String userEmail) {
+        if(userMap.containsValue(userEmail)){
+           return true;
         } else {
             return false;
         }

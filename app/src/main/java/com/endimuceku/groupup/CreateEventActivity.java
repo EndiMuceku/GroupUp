@@ -2,18 +2,23 @@ package com.endimuceku.groupup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -112,7 +117,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         type = (AutoCompleteTextView) findViewById(R.id.event_type_ed);
 
-        String[] dropDownOptions = {"Eating", "Drinking", "Exercise", "Games", "Hangout", "Cinema", "Concert", "Sports", "Party", "Shopping", "Other"};
+        String[] dropDownOptions = {"Food & Drink", "Exercise", "Games", "Hangout", "Cinema", "Concert", "Sports", "Party", "Shopping", "Other"};
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, dropDownOptions);
 
         type.setAdapter(adapter);
@@ -161,9 +166,10 @@ public class CreateEventActivity extends AppCompatActivity {
             EventGroup eventGroup = new EventGroup(eventTitle, eventDescription, eventDate, eventTime, addressLine1, addressLine2,
                     addressLine3, postcode, location, eventType, userMap);
 
-            ref.setValue(eventGroup);
-            ref.child("users").setValue(userMap);
-            ref.push();
+            DatabaseReference newRef = ref.push();
+            newRef.setValue(eventGroup);
+            newRef.child("users").setValue(userMap);
+            newRef.push();
 
             /* Code for adding new users to event database - PLEASE SAVE FOR LATER
             ref.child("users").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -180,6 +186,9 @@ public class CreateEventActivity extends AppCompatActivity {
                     }
                 }
             });*/
+
+            Toast.makeText(context, "Event successfully created: " + eventGroup.getEventTitle(), Toast.LENGTH_LONG).show();
+            finish();
 
         }
     }
