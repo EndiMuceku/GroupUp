@@ -1,10 +1,13 @@
 package com.endimuceku.groupup;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class EventGroup {
@@ -19,11 +22,12 @@ public class EventGroup {
     private String postcode;
     private String location;
     private String eventType;
+    private String owner;
 
-    private Map<String, String> userMap;
+    private Map<String, String> users = new HashMap<>();
 
     public EventGroup(String eventTitle, String eventDescription, String eventDate, String eventTime, String addressLine1, String addressLine2,
-                      String addressLine3, String postcode, String location, String eventType, Map<String, String> map) {
+                      String addressLine3, String postcode, String location, String eventType, String owner) {
         this.eventTitle = eventTitle;
         this.eventDescription = eventDescription;
         this.eventDate = eventDate;
@@ -34,9 +38,7 @@ public class EventGroup {
         this.postcode = postcode;
         this.location = location;
         this.eventType = eventType;
-
-        userMap = map;
-
+        this.owner = owner;
     }
 
     public EventGroup() {}
@@ -81,8 +83,20 @@ public class EventGroup {
         return eventType;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public Map<String, String> getUsers() {
+        return users;
+    }
+
     public boolean isCreator(String userEmail) {
-        if (userEmail.equals(userMap.values().toArray()[0])) {
+        if (userEmail.equals(owner)) {
             return true;
         } else {
             return false;
@@ -90,11 +104,19 @@ public class EventGroup {
     }
 
     public boolean isMember(String userEmail) {
-        if(userMap.containsValue(userEmail)){
+        if(users.containsValue(userEmail)){
            return true;
         } else {
             return false;
         }
+    }
+
+    public void addUser(String displayName, String userEmail){
+        users.put(displayName, userEmail);
+    }
+
+    public void removeUser(String displayName) {
+        users.remove(displayName);
     }
 
 }

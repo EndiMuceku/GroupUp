@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.EventLog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +25,21 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class EventFragment extends Fragment {
@@ -114,32 +126,63 @@ public class EventFragment extends Fragment {
             holder.setEventType(model.getEventType());
 
         button = holder.itemView.findViewById(R.id.join_group_button);
-        button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.join_group_icon, 0, 0 , 0);
 
-        /*if(user != null){
-            if(model.isCreator(user.getEmail())){
-                button.setText(R.string.delete_group_button);
-                button.setBackgroundColor(Color.parseColor("#e53935"));
-                button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.delete_group_icon, 0, 0, 0);
-            } else if (model.isMember(user.getEmail())){
-                button.setText(R.string.leave_group_button);
-                button.setBackgroundColor(Color.parseColor("#e53935"));
-                button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.leave_group_icon, 0, 0 , 0);
-            }
-        }
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                if(model.isCreator(user.getEmail())){
-
-                } else if (model.isMember(user.getEmail())){
-
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                if(eg.isCreator(user.getEmail())){
+                    button.setText(R.string.delete_group_button);
+                    button.setBackgroundColor(Color.parseColor("#e53935"));
+                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.delete_group_icon, 0, 0, 0);
+                } else if (eg.isMember(user.getEmail())){
+                    button.setText(R.string.leave_group_button);
+                    button.setBackgroundColor(Color.parseColor("#e53935"));
+                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.leave_group_icon, 0, 0 , 0);
                 } else {
-
+                    button.setText(R.string.join_group_button);
+                    button.setBackgroundColor(Color.parseColor("#4caf50"));
+                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.join_group_icon, 0, 0 , 0);
                 }
             }
-        });*/
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                        String key = snapshot.getChildren().iterator().next().getKey();
+                        if(eg.isCreator(user.getEmail())){
+                            ref.child(key).removeValue();
+                            Toast.makeText(context, "Group " + model.getEventTitle() + " deleted.", Toast.LENGTH_LONG).show();
+                        } else if (eg.isMember(user.getEmail())){
+                            eg.removeUser(user.getDisplayName());
+                            ref.child(key).setValue(eg);
+                            Toast.makeText(context, "Group " + model.getEventTitle() + " left.", Toast.LENGTH_LONG).show();
+                        } else {
+                            eg.addUser(user.getDisplayName(), user.getEmail());
+                            ref.child(key).setValue(eg);
+                            Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
 
             switch(model.getEventType()) {
                 case "Food & Drink":

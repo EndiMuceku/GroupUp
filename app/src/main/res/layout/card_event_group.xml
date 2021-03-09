@@ -95,8 +95,9 @@
                         android:layout_marginTop="0dp"
                         android:layout_marginEnd="12dp"
                         android:layout_marginRight="12dp"
-                        android:text="@string/join_group_button"
-                        app:backgroundTint="#4caf50"
+                        android:text="@string/delete_group_button"
+                        android:drawableLeft="@drawable/delete_group_icon"
+                        app:backgroundTint="#e53935"
                         app:cornerRadius="20dp"
                         tools:layout_marginTop="8dp" />
 

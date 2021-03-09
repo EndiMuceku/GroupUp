@@ -9,6 +9,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,8 +27,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -160,32 +164,14 @@ public class CreateEventActivity extends AppCompatActivity {
         } else if (eventType.isEmpty()) {
             mEventType.setError("You need to choose an event type.");
         } else {
-            Map<String, String> userMap = new HashMap<>();
-            userMap.put(user.getDisplayName(), user.getEmail());
-
             EventGroup eventGroup = new EventGroup(eventTitle, eventDescription, eventDate, eventTime, addressLine1, addressLine2,
-                    addressLine3, postcode, location, eventType, userMap);
+                    addressLine3, postcode, location, eventType, user.getEmail());
+
+            eventGroup.addUser(user.getDisplayName(), user.getEmail());
 
             DatabaseReference newRef = ref.push();
             newRef.setValue(eventGroup);
-            newRef.child("users").setValue(userMap);
             newRef.push();
-
-            /* Code for adding new users to event database - PLEASE SAVE FOR LATER
-            ref.child("users").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if (!task.isSuccessful()){
-                        Toast.makeText(context, "Error occured getting data.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Map <String, String> updateMap = (Map) task.getResult().getValue();
-                        updateMap.put("AlanShearer1", "alanshearer1@google.com");
-                        updateMap.put("AlexDOSSANTOS", "alexbarros@gmail.com");
-                        ref.child("users").setValue(updateMap);
-                        ref.push();
-                    }
-                }
-            });*/
 
             Toast.makeText(context, "Event successfully created: " + eventGroup.getEventTitle(), Toast.LENGTH_LONG).show();
             finish();
