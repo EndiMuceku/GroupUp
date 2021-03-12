@@ -3,30 +3,23 @@ package com.endimuceku.groupup;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,20 +30,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-
 public class EventFragment extends Fragment {
 
     private Activity activity;
     private RecyclerView mEventGroupList;
     private Context context;
 
-    private MaterialButton button;
+    private MaterialButton joinGroupButton;
+    private MaterialButton leaveGroupButton;
+    private MaterialButton deleteGroupButton;
+
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+
+    private String eventKey;
+
+    private EventGroup eventGroup = new EventGroup();
 
     EventGroupAdapter eventGroupAdapter;
 
@@ -112,7 +107,6 @@ public class EventFragment extends Fragment {
             super(options);
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         @Override
         protected void onBindViewHolder(@NonNull EventGroupAdapter.EventGroupViewHolder holder, int position, @NonNull EventGroup model) {
             holder.setEventTitle(model.getEventTitle());
@@ -125,64 +119,83 @@ public class EventFragment extends Fragment {
             holder.setAddressLine3(model.getAddressLine3());
             holder.setEventType(model.getEventType());
 
-        button = holder.itemView.findViewById(R.id.join_group_button);
+            joinGroupButton = holder.itemView.findViewById(R.id.join_group_button);
+            leaveGroupButton = holder.itemView.findViewById(R.id.leave_group_button);
+            deleteGroupButton = holder.itemView.findViewById(R.id.delete_group_button);
 
-        Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
-                if(eg.isCreator(user.getEmail())){
-                    button.setText(R.string.delete_group_button);
-                    button.setBackgroundColor(Color.parseColor("#e53935"));
-                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.delete_group_icon, 0, 0, 0);
-                } else if (eg.isMember(user.getEmail())){
-                    button.setText(R.string.leave_group_button);
-                    button.setBackgroundColor(Color.parseColor("#e53935"));
-                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.leave_group_icon, 0, 0 , 0);
-                } else {
-                    button.setText(R.string.join_group_button);
-                    button.setBackgroundColor(Color.parseColor("#4caf50"));
-                    button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.join_group_icon, 0, 0 , 0);
-                }
-            }
+            joinGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                            String key = snapshot.getChildren().iterator().next().getKey();
+                            if(eg.isMember(user.getEmail())){
+                                Toast.makeText(context, "You have already joined this group.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                eg.addUser(user.getDisplayName(), user.getEmail());
+                                ref.child(key).setValue(eg);
+                                Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_SHORT).show();
+                            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
-                        String key = snapshot.getChildren().iterator().next().getKey();
-                        if(eg.isCreator(user.getEmail())){
-                            ref.child(key).removeValue();
-                            Toast.makeText(context, "Group " + model.getEventTitle() + " deleted.", Toast.LENGTH_LONG).show();
-                        } else if (eg.isMember(user.getEmail())){
-                            eg.removeUser(user.getDisplayName());
-                            ref.child(key).setValue(eg);
-                            Toast.makeText(context, "Group " + model.getEventTitle() + " left.", Toast.LENGTH_LONG).show();
-                        } else {
-                            eg.addUser(user.getDisplayName(), user.getEmail());
-                            ref.child(key).setValue(eg);
-                            Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_LONG).show();
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+                }
+            });
 
-                    }
-                });
-            }
-        });
+            leaveGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                            String key = snapshot.getChildren().iterator().next().getKey();
+                            if(eg.isCreator(user.getEmail())){
+                                Toast.makeText(context, "A group owner cannot leave a group, they can only delete it.", Toast.LENGTH_SHORT).show();
+                            } else if (eg.isMember(user.getEmail())) {
+                                eg.removeUser(user.getDisplayName());
+                                ref.child(key).setValue(eg);
+                                Toast.makeText(context, "Group " + model.getEventTitle() + " left.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "You cannot leave a group you haven't joined.", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+                }
+            });
+
+            deleteGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                            String key = snapshot.getChildren().iterator().next().getKey();
+                            if(eg.isCreator(user.getEmail())){
+                                ref.child(key).removeValue();
+                                Toast.makeText(context, "Group " + model.getEventTitle() + " deleted.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Only the owner can delete a group.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+                }
+            });
 
             switch(model.getEventType()) {
                 case "Food & Drink":
@@ -215,6 +228,7 @@ public class EventFragment extends Fragment {
                 default:
                     holder.setImage(R.drawable.other);
             }
+
 
         }
 
