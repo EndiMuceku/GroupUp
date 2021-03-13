@@ -14,7 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EventFragment extends Fragment {
 
     private Activity activity;
@@ -43,9 +49,9 @@ public class EventFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
 
-    private String eventKey;
+    private SearchView searchView;
 
-    private EventGroup eventGroup = new EventGroup();
+    private FirebaseRecyclerOptions<EventGroup> options;
 
     EventGroupAdapter eventGroupAdapter;
 
@@ -66,11 +72,9 @@ public class EventFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_event, container, false);
         ImageView button = (ImageView) view.findViewById(R.id.createEventImageView);
-        button.setOnClickListener(new View.OnClickListener()
-        {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 startActivity(startCreateEventActivityIntent);
             }
         });
@@ -79,24 +83,57 @@ public class EventFragment extends Fragment {
         mEventGroupList.setHasFixedSize(true);
         mEventGroupList.setLayoutManager(new LinearLayoutManager(context));
 
-        FirebaseRecyclerOptions<EventGroup> options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(ref, EventGroup.class).build();
+        options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(ref, EventGroup.class).build();
         eventGroupAdapter = new EventGroupAdapter(options);
         mEventGroupList.setAdapter(eventGroupAdapter);
+
+        searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                search(query);
+                return true;
+            }
+        });
 
         // Inflate the layout for this fragment
         return view;
     }
 
-    @Override public void onStart()
-    {
+    private void search(String s) {
+        Log.d("Search term:", s);
+
+        Query query;
+        if(!s.isEmpty()){
+            query = ref.orderByChild("eventTitle").startAt(s).endAt(s + "\uf8ff");
+        } else {
+            query = ref;
+        }
+
+        FirebaseRecyclerOptions<EventGroup> searchOptions =
+                new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(query, EventGroup.class).setLifecycleOwner(this).build();
+
+        EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(searchOptions);
+        mEventGroupList.setAdapter(eventGroupSearchAdapter);
+        eventGroupSearchAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart() {
         super.onStart();
         eventGroupAdapter.startListening();
     }
 
     // Function to tell the app to stop getting
     // data from database on stopping of the activity
-    @Override public void onStop()
-    {
+    @Override
+    public void onStop() {
         super.onStop();
         eventGroupAdapter.stopListening();
     }
@@ -132,7 +169,7 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if(eg.isMember(user.getEmail())){
+                            if (eg.isMember(user.getEmail())) {
                                 Toast.makeText(context, "You have already joined this group.", Toast.LENGTH_SHORT).show();
                             } else {
                                 eg.addUser(user.getDisplayName(), user.getEmail());
@@ -143,7 +180,8 @@ public class EventFragment extends Fragment {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
                     });
                 }
             });
@@ -157,7 +195,7 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if(eg.isCreator(user.getEmail())){
+                            if (eg.isCreator(user.getEmail())) {
                                 Toast.makeText(context, "A group owner cannot leave a group, they can only delete it.", Toast.LENGTH_SHORT).show();
                             } else if (eg.isMember(user.getEmail())) {
                                 eg.removeUser(user.getDisplayName());
@@ -170,7 +208,8 @@ public class EventFragment extends Fragment {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
                     });
                 }
             });
@@ -184,20 +223,22 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if(eg.isCreator(user.getEmail())){
+                            if (eg.isCreator(user.getEmail())) {
                                 ref.child(key).removeValue();
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " deleted.", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(context, "Only the owner can delete a group.", Toast.LENGTH_SHORT).show();
                             }
                         }
+
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
                     });
                 }
             });
 
-            switch(model.getEventType()) {
+            switch (model.getEventType()) {
                 case "Food & Drink":
                     holder.setImage(R.drawable.food_and_drink);
                     break;
@@ -228,8 +269,6 @@ public class EventFragment extends Fragment {
                 default:
                     holder.setImage(R.drawable.other);
             }
-
-
         }
 
         @NonNull
@@ -241,57 +280,57 @@ public class EventFragment extends Fragment {
 
         class EventGroupViewHolder extends RecyclerView.ViewHolder {
 
-            public EventGroupViewHolder(@NonNull View itemView){
+            public EventGroupViewHolder(@NonNull View itemView) {
                 super(itemView);
             }
 
-            public void setEventTitle (String eventTitle) {
+            public void setEventTitle(String eventTitle) {
                 TextView eventTitleTextView = (TextView) itemView.findViewById(R.id.event_title_card_textview);
                 eventTitleTextView.setText(eventTitle);
             }
 
-            public void setEventDescription (String eventDescription) {
+            public void setEventDescription(String eventDescription) {
                 TextView eventDescriptionTextView = (TextView) itemView.findViewById(R.id.event_description_card_textview);
                 eventDescriptionTextView.setText(eventDescription);
             }
 
-            public void setEventDateAndTime (String date, String time) {
+            public void setEventDateAndTime(String date, String time) {
                 TextView dateAndTimeTextView = (TextView) itemView.findViewById(R.id.date_and_time_card_textview);
                 String textToBeSet = date + ", " + time;
                 dateAndTimeTextView.setText(textToBeSet);
             }
 
-            public void setLocation (String location) {
+            public void setLocation(String location) {
                 TextView locationTextView = (TextView) itemView.findViewById(R.id.location_card_textview);
                 locationTextView.setText(location);
             }
 
-            public void setPostcode (String postcode) {
+            public void setPostcode(String postcode) {
                 TextView postcodeTextView = (TextView) itemView.findViewById(R.id.postcode_card_textview);
                 postcodeTextView.setText(postcode);
             }
 
-            public void setAddressLine1 (String addressLine1){
+            public void setAddressLine1(String addressLine1) {
                 TextView addressLine1TextView = (TextView) itemView.findViewById(R.id.address_line_1_card_textview);
                 addressLine1TextView.setText(addressLine1);
             }
 
-            public void setAddressLine2 (String addressLine2){
+            public void setAddressLine2(String addressLine2) {
                 TextView addressLine2TextView = (TextView) itemView.findViewById(R.id.address_line_2_card_textview);
                 addressLine2TextView.setText(addressLine2);
             }
 
-            public void setAddressLine3 (String addressLine3){
+            public void setAddressLine3(String addressLine3) {
                 TextView addressLine3TextView = (TextView) itemView.findViewById(R.id.address_line_3_card_textview);
                 addressLine3TextView.setText(addressLine3);
             }
 
-            public void setEventType (String eventType){
+            public void setEventType(String eventType) {
                 TextView eventTypeTextView = (TextView) itemView.findViewById(R.id.event_type_card_textview);
                 eventTypeTextView.setText(eventType);
             }
 
-            public void setImage(int image){
+            public void setImage(int image) {
                 ImageView imageView = (ImageView) itemView.findViewById(R.id.cardImageView);
                 imageView.setImageResource(image);
             }
@@ -299,5 +338,4 @@ public class EventFragment extends Fragment {
         }
 
     }
-
 }
