@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -42,20 +45,19 @@ public class EventFragment extends Fragment {
     private RecyclerView mEventGroupList;
     private Context context;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+
+    private FirebaseRecyclerOptions<EventGroup> options;
+    private EventGroupAdapter eventGroupAdapter;
+    private DatabaseReference ref;
+
     private MaterialButton joinGroupButton;
     private MaterialButton leaveGroupButton;
     private MaterialButton deleteGroupButton;
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-
     private SearchView searchView;
-
-    private FirebaseRecyclerOptions<EventGroup> options;
-
-    EventGroupAdapter eventGroupAdapter;
-
-    DatabaseReference ref;
+    private AutoCompleteTextView eventType;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,6 +101,35 @@ public class EventFragment extends Fragment {
             public boolean onQueryTextChange(String query) {
                 search(query);
                 return true;
+            }
+        });
+
+        eventType = (AutoCompleteTextView) view.findViewById(R.id.event_type_filter_ed);
+
+        String[] dropDownOptions = {"All Events", "Food & Drink", "Exercise", "Games", "Hangout", "Cinema", "Concert", "Sports", "Party", "Shopping", "Other"};
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, dropDownOptions);
+
+        eventType.setAdapter(adapter);
+        eventType.setThreshold(1);
+
+        eventType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Query query;
+                if(eventType.getAdapter().getItem(position).equals("All Events")) {
+                    query = ref;
+                } else {
+                    query = ref.orderByChild("eventType").equalTo(eventType.getText().toString());
+                }
+
+                FirebaseRecyclerOptions<EventGroup> filterOptions =
+                        new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(query, EventGroup.class).setLifecycleOwner(getViewLifecycleOwner()).build();
+
+                EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(filterOptions);
+                mEventGroupList.setAdapter(eventGroupSearchAdapter);
+                eventGroupSearchAdapter.notifyDataSetChanged();
             }
         });
 
@@ -180,8 +211,7 @@ public class EventFragment extends Fragment {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
             });
@@ -208,8 +238,7 @@ public class EventFragment extends Fragment {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
             });
@@ -232,8 +261,7 @@ public class EventFragment extends Fragment {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
                 }
             });
@@ -338,4 +366,5 @@ public class EventFragment extends Fragment {
         }
 
     }
+
 }
