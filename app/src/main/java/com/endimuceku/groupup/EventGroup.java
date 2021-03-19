@@ -95,28 +95,28 @@ public class EventGroup {
         return users;
     }
 
-    public boolean isCreator(String userEmail) {
-        if (userEmail.equals(owner)) {
+    public boolean isCreator(String userID) {
+        if (userID.equals(owner)) {
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean isMember(String userEmail) {
-        if(users.containsValue(userEmail)){
+    public boolean isMember(String userID) {
+        if(users.containsKey(userID)){
            return true;
         } else {
             return false;
         }
     }
 
-    public void addUser(String displayName, String userEmail){
-        users.put(displayName, userEmail);
+    public void addUser(String userID, String userEmail){
+        users.put(userID, userEmail);
     }
 
-    public void removeUser(String displayName) {
-        users.remove(displayName);
+    public void removeUser(String userID) {
+        users.remove(userID);
     }
 
 }

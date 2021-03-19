@@ -73,8 +73,8 @@ public class EventFragment extends Fragment {
         Intent startCreateEventActivityIntent = new Intent(activity, CreateEventActivity.class);
 
         View view = inflater.inflate(R.layout.fragment_event, container, false);
-        ImageView button = (ImageView) view.findViewById(R.id.createEventImageView);
-        button.setOnClickListener(new View.OnClickListener() {
+        ImageView createEventIcon = (ImageView) view.findViewById(R.id.createEventImageView);
+        createEventIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(startCreateEventActivityIntent);
@@ -155,14 +155,14 @@ public class EventFragment extends Fragment {
         eventGroupSearchAdapter.notifyDataSetChanged();
     }
 
+    // Tell the app to start getting data from the database on activity start
     @Override
     public void onStart() {
         super.onStart();
         eventGroupAdapter.startListening();
     }
 
-    // Function to tell the app to stop getting
-    // data from database on stopping of the activity
+    // Tell the app to stop getting data from the database on activity stop
     @Override
     public void onStop() {
         super.onStop();
@@ -200,10 +200,10 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if (eg.isMember(user.getEmail())) {
+                            if (eg.isMember(user.getUid())) {
                                 Toast.makeText(context, "You have already joined this group.", Toast.LENGTH_SHORT).show();
                             } else {
-                                eg.addUser(user.getDisplayName(), user.getEmail());
+                                eg.addUser(user.getUid(), user.getEmail());
                                 ref.child(key).setValue(eg);
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_SHORT).show();
                             }
@@ -225,10 +225,10 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if (eg.isCreator(user.getEmail())) {
+                            if (eg.isCreator(user.getUid())) {
                                 Toast.makeText(context, "A group owner cannot leave a group, they can only delete it.", Toast.LENGTH_SHORT).show();
-                            } else if (eg.isMember(user.getEmail())) {
-                                eg.removeUser(user.getDisplayName());
+                            } else if (eg.isMember(user.getUid())) {
+                                eg.removeUser(user.getUid());
                                 ref.child(key).setValue(eg);
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " left.", Toast.LENGTH_SHORT).show();
                             } else {
@@ -252,7 +252,7 @@ public class EventFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                             String key = snapshot.getChildren().iterator().next().getKey();
-                            if (eg.isCreator(user.getEmail())) {
+                            if (eg.isCreator(user.getUid())) {
                                 ref.child(key).removeValue();
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " deleted.", Toast.LENGTH_SHORT).show();
                             } else {

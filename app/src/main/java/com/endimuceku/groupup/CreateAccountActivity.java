@@ -77,17 +77,16 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     String name = user.getDisplayName();
-                                                    Toast.makeText(context, "Successfully created account for user " + name + ", please verify your email before signing in.", Toast.LENGTH_LONG).show();
+                                                    Toast.makeText(context, "Successfully created account for user " + name + ", please verify your email before signing in.", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(context, "Authentication failed.",
-                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_SHORT).show();
                             }
 
-                            // ...
                         }
                     });
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){

@@ -17,9 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-
     private TextInputLayout mEmailInput;
-
     private String email;
     private Context context;
 

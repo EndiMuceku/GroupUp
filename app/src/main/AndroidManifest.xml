@@ -10,9 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GroupUp">
         <activity
-            android:name=".CreateEventActivity"
+            android:name=".UpdateAccountActivity"
+            android:parentActivityName=".ViewAccountActivity"
+            android:label="Update Account Details" />
+        <activity android:name=".ViewAccountActivity"
             android:parentActivityName=".MainActivity"
-            android:label="@string/createevent_title" />
+            android:label="Account Settings"/>
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="@string/createevent_title"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity" />
         <activity
             android:name=".ForgotPasswordActivity"

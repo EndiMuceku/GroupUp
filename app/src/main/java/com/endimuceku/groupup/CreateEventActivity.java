@@ -165,9 +165,9 @@ public class CreateEventActivity extends AppCompatActivity {
             mEventType.setError("You need to choose an event type.");
         } else {
             EventGroup eventGroup = new EventGroup(eventTitle, eventDescription, eventDate, eventTime, addressLine1, addressLine2,
-                    addressLine3, postcode, location, eventType, user.getEmail());
+                    addressLine3, postcode, location, eventType, user.getUid());
 
-            eventGroup.addUser(user.getDisplayName(), user.getEmail());
+            eventGroup.addUser(user.getUid(), user.getEmail());
 
             DatabaseReference newRef = ref.push();
             newRef.setValue(eventGroup);
