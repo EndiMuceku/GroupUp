@@ -17,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -35,9 +33,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EventFragment extends Fragment {
 
@@ -68,11 +63,13 @@ public class EventFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("events");
+        ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference().child("events");
 
         Intent startCreateEventActivityIntent = new Intent(activity, CreateEventActivity.class);
 
         View view = inflater.inflate(R.layout.fragment_event, container, false);
+
         ImageView createEventIcon = (ImageView) view.findViewById(R.id.createEventImageView);
         createEventIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,8 +103,12 @@ public class EventFragment extends Fragment {
 
         eventType = (AutoCompleteTextView) view.findViewById(R.id.event_type_filter_ed);
 
-        String[] dropDownOptions = {"All Events", "Food & Drink", "Exercise", "Games", "Hangout", "Cinema", "Concert", "Sports", "Party", "Shopping", "Other"};
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, dropDownOptions);
+        String[] dropDownOptions =
+                {"All Events", "Food & Drink", "Exercise", "Games", "Hangout",
+                        "Cinema", "Concert", "Sports", "Party", "Shopping", "Other"};
+
+        ArrayAdapter<CharSequence> adapter =
+                new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, dropDownOptions);
 
         eventType.setAdapter(adapter);
         eventType.setThreshold(1);
@@ -124,8 +125,10 @@ public class EventFragment extends Fragment {
                     query = ref.orderByChild("eventType").equalTo(eventType.getText().toString());
                 }
 
-                FirebaseRecyclerOptions<EventGroup> filterOptions =
-                        new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(query, EventGroup.class).setLifecycleOwner(getViewLifecycleOwner()).build();
+                FirebaseRecyclerOptions<EventGroup> filterOptions = new FirebaseRecyclerOptions.Builder<EventGroup>()
+                        .setQuery(query, EventGroup.class)
+                        .setLifecycleOwner(getViewLifecycleOwner())
+                        .build();
 
                 EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(filterOptions);
                 mEventGroupList.setAdapter(eventGroupSearchAdapter);
@@ -147,8 +150,10 @@ public class EventFragment extends Fragment {
             query = ref;
         }
 
-        FirebaseRecyclerOptions<EventGroup> searchOptions =
-                new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(query, EventGroup.class).setLifecycleOwner(this).build();
+        FirebaseRecyclerOptions<EventGroup> searchOptions = new FirebaseRecyclerOptions.Builder<EventGroup>()
+                .setQuery(query, EventGroup.class)
+                .setLifecycleOwner(this)
+                .build();
 
         EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(searchOptions);
         mEventGroupList.setAdapter(eventGroupSearchAdapter);
