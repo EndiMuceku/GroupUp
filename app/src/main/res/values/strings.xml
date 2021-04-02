@@ -46,4 +46,7 @@
     <string name="update_account_details_button">Update Account Details</string>
     <string name="select_image_button">Select Image</string>
     <string name="account_settings">Account Settings</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="sender">Sender</string>
+    <string name="message">Message</string>
 </resources>

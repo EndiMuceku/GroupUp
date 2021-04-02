@@ -143,6 +143,30 @@ public class GroupFragment extends Fragment {
                     default:
                         holder.setImage(R.drawable.other);
                 }
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, GroupChatActivity.class);
+
+                        Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                                String key = snapshot.getChildren().iterator().next().getKey();
+                                intent.putExtra("eventKey", key);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                });
+
             }
         }
 

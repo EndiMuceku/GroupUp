@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -37,6 +39,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private DatabaseReference eventsRef;
     private DatabaseReference groupsRef;
+    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +206,7 @@ public class CreateEventActivity extends AppCompatActivity {
             DatabaseReference newEventsRef = eventsRef.push();
             newEventsRef.setValue(eventGroup);
             newEventsRef.push();
+
             /*
             HashMap<String, String> groupHashMap = new HashMap<>();
             groupHashMap.put("EventGroup ID", newEventsRef.getKey());

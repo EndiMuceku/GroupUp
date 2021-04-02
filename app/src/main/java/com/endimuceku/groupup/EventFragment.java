@@ -34,6 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EventFragment extends Fragment {
 
     private Activity activity;
@@ -208,8 +211,9 @@ public class EventFragment extends Fragment {
                             if (eg.isMember(user.getUid())) {
                                 Toast.makeText(context, "You have already joined this group.", Toast.LENGTH_SHORT).show();
                             } else {
-                                eg.addUser(user.getUid(), user.getEmail());
-                                ref.child(key).setValue(eg);
+                                Map<String, String> hashMap = eg.getUsers();
+                                hashMap.put(user.getUid(), user.getEmail());
+                                ref.child(key).child("users").setValue(hashMap);
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_SHORT).show();
                             }
 
@@ -233,8 +237,7 @@ public class EventFragment extends Fragment {
                             if (eg.isCreator(user.getUid())) {
                                 Toast.makeText(context, "A group owner cannot leave a group, they can only delete it.", Toast.LENGTH_SHORT).show();
                             } else if (eg.isMember(user.getUid())) {
-                                eg.removeUser(user.getUid());
-                                ref.child(key).setValue(eg);
+                                ref.child(key).child("users").child(user.getUid()).removeValue();
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " left.", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(context, "You cannot leave a group you haven't joined.", Toast.LENGTH_SHORT).show();

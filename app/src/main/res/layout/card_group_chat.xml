@@ -28,8 +28,8 @@
 
                 <ImageView
                     android:id="@+id/groupIconView"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:contentDescription="@string/event_card_image_content_description"
                     android:scaleType="centerCrop"
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
