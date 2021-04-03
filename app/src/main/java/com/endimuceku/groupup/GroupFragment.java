@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class GroupFragment extends Fragment {
 
@@ -42,7 +45,8 @@ public class GroupFragment extends Fragment {
 
     private FirebaseRecyclerOptions<EventGroup> options;
     private GroupChatAdapter groupChatAdapter;
-    private DatabaseReference ref;
+    private DatabaseReference usersRef;
+    private DatabaseReference eventsRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,14 +69,14 @@ public class GroupFragment extends Fragment {
             }
         });
 
-        ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
+        eventsRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
 
         mEventGroupChats = (RecyclerView) view.findViewById(R.id.groupChatRecyclerView);
         mEventGroupChats.setHasFixedSize(true);
         mEventGroupChats.setLayoutManager(new LinearLayoutManager(context));
 
-        options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(ref, EventGroup.class).build();
+        options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(eventsRef, EventGroup.class).build();
         groupChatAdapter = new GroupChatAdapter(options);
         mEventGroupChats.setAdapter(groupChatAdapter);
 
@@ -112,6 +116,60 @@ public class GroupFragment extends Fragment {
                 holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 holder.setEventTitle(model.getEventTitle());
 
+                Query query = eventsRef.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                        String key = snapshot.getChildren().iterator().next().getKey();
+                        eventsRef.child(key).child("messages").limitToLast(1).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    String message = "" + ds.child("message").getValue();
+                                    String sender = "" + ds.child("sender").getValue();
+                                    String timestamp = "" + ds.child("timestamp").getValue();
+
+                                    Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+                                    cal.setTimeInMillis(Long.parseLong(timestamp));
+                                    String timeS = DateFormat.format("dd/MM/yy hh:mm aa", cal).toString();
+
+                                    holder.setMessage(message);
+                                    holder.setTime(timeS);
+
+                                    usersRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
+                                            .getReference().child("users");
+                                    usersRef.orderByKey().equalTo(sender).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            for (DataSnapshot ds: snapshot.getChildren()) {
+                                                String displayName = "" + ds.getValue();
+                                                holder.setSender(displayName);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
                 switch (model.getEventType()) {
                     case "Food & Drink":
                         holder.setImage(R.drawable.food_and_drink);
@@ -149,7 +207,7 @@ public class GroupFragment extends Fragment {
                     public void onClick(View v) {
                         Intent intent = new Intent(context, GroupChatActivity.class);
 
-                        Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
+                        Query query = eventsRef.orderByChild("eventTitle").equalTo(model.getEventTitle());
                         query.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -191,6 +249,21 @@ public class GroupFragment extends Fragment {
             public void setImage(int image) {
                 ImageView imageView = (ImageView) itemView.findViewById(R.id.groupIconView);
                 imageView.setImageResource(image);
+            }
+
+            public void setSender(String sender) {
+                TextView senderTextView = (TextView) itemView.findViewById(R.id.name_of_sender);
+                senderTextView.setText(sender);
+            }
+
+            public void setMessage(String message) {
+                TextView messageTextView = (TextView) itemView.findViewById(R.id.last_message);
+                messageTextView.setText(message);
+            }
+
+            public void setTime(String time) {
+                TextView timeTextView = (TextView) itemView.findViewById(R.id.message_time);
+                timeTextView.setText(time);
             }
 
         }

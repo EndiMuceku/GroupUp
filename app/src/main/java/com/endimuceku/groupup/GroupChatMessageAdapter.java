@@ -1,6 +1,7 @@
 package com.endimuceku.groupup;
 
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessageAdapter.MessageViewHolder>{
 
@@ -38,6 +41,7 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
         this.groupChatMessages = groupChatMessages;
 
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
     }
 
     @NonNull
@@ -58,8 +62,14 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
 
         String message = groupChatMessage.getMessage();
         String senderID = groupChatMessage.getSender();
+        String timestamp = groupChatMessage.getTimestamp();
+
+        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+        cal.setTimeInMillis(Long.parseLong(timestamp));
+        String time = DateFormat.format("dd/MM/yy hh:mm aa", cal).toString();
 
         holder.message.setText(message);
+        holder.timestamp.setText(time);
 
         // get sender display name
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -67,7 +77,12 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
         ref.orderByKey().equalTo(senderID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                for (DataSnapshot ds: snapshot.getChildren()) {
+                    String displayName = "" + ds.getValue();
+                    if (!displayName.equals(user.getDisplayName())) {
+                        holder.sender.setText(displayName);
+                    }
+                }
             }
 
             @Override
@@ -100,10 +115,9 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-
             sender = itemView.findViewById(R.id.message_sender);
             message = itemView.findViewById(R.id.text_message);
-            timestamp = itemView.findViewById(R.id.message_time);
+            timestamp = itemView.findViewById(R.id.message_timestamp);
 
         }
     }

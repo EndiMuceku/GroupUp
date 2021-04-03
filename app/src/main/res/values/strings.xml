@@ -5,7 +5,7 @@
     <string name="e_mail">E-mail</string>
     <string name="noaccounttext">Don\'t have an account? Create one here.</string>
     <string name="forgotpasstext">Forgotten your password? Reset it here.</string>
-    <string name="groupup_2021">© GroupUp! 2021 (version 7.5)</string>
+    <string name="groupup_2021">© GroupUp! 2021 (version 1.0)</string>
     <string name="title">GroupUp!</string>
     <string name="reset_password_button_text">Reset Password</string>
     <string name="create_account_button_text">Create Account</string>
@@ -48,5 +48,7 @@
     <string name="account_settings">Account Settings</string>
     <string name="type_a_message">Type a message...</string>
     <string name="sender">Sender</string>
-    <string name="message">Message</string>
+    <string name="message">No messages</string>
+    <string name="time_sent"></string>
+    <string name="name_of_sender"></string>
 </resources>

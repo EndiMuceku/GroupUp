@@ -10,6 +10,8 @@ public class GroupChatMessage {
         this.timestamp = timestamp;
     }
 
+    public GroupChatMessage() {}
+
     public String getMessage() {
         return message;
     }

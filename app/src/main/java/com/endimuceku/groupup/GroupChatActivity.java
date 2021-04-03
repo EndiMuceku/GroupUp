@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GroupChatActivity extends AppCompatActivity {
@@ -44,6 +47,9 @@ public class GroupChatActivity extends AppCompatActivity {
     private RecyclerView mGroupMessages;
     private Context context;
 
+    private ArrayList<GroupChatMessage> groupChatMessages;
+    private GroupChatMessageAdapter groupChatMessageAdapter;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,8 @@ public class GroupChatActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        groupChatMessages = new ArrayList<>();
 
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
@@ -119,6 +127,24 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+        ref.child(eventKey).child("messages").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                groupChatMessages.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    GroupChatMessage msg = ds.getValue(GroupChatMessage.class);
+                    groupChatMessages.add(msg);
+                }
+                groupChatMessageAdapter = new GroupChatMessageAdapter(GroupChatActivity.this, groupChatMessages);
+                mGroupMessages.setAdapter(groupChatMessageAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         sendMessageIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,7 +158,12 @@ public class GroupChatActivity extends AppCompatActivity {
                     hashMap.put("message", text);
                     hashMap.put("timestamp", timestamp);
 
-                    ref.child(eventKey).child("messages").child(timestamp).setValue(hashMap);
+                    ref.child(eventKey).child("messages").child(timestamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            messageText.setText("");
+                        }
+                    });
 
                 }
             }

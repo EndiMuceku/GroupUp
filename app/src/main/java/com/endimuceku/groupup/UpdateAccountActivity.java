@@ -42,8 +42,6 @@ public class UpdateAccountActivity extends AppCompatActivity {
 
     private DatabaseReference ref;
 
-    private Map<String, String> userHashMap;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
