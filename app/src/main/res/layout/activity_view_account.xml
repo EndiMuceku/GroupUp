@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/view_email"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/deleteAccountButton"
+        app:layout_constraintBottom_toTopOf="@+id/changeAccountDetailsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,9 +21,9 @@
         android:id="@+id/view_account_display_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/view_display_name"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/changeAccountDetailsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_account_email" />
@@ -43,22 +43,10 @@
         android:id="@+id/logOutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="60dp"
         android:backgroundTint="#fbc02d"
         android:onClick="logOutButtonClicked"
         android:text="@string/log_out_button"
-        app:layout_constraintBottom_toTopOf="@+id/deleteAccountButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/deleteAccountButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:backgroundTint="#e53935"
-        android:onClick="deleteAccountButtonClicked"
-        android:text="@string/delete_account_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

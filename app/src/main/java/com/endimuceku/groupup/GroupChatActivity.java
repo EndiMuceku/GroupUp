@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 public class GroupChatActivity extends AppCompatActivity {
 
@@ -37,6 +39,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView groupIcon;
     private ImageView sendMessageIcon;
+    private ImageView backIcon;
     private TextView groupTitle;
     private EditText messageText;
 
@@ -74,6 +77,7 @@ public class GroupChatActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.group_chat_toolbar);
         groupIcon = (ImageView) findViewById(R.id.groupChatIcon);
         sendMessageIcon = (ImageView) findViewById(R.id.sendMessageIcon);
+        backIcon = (ImageView) findViewById(R.id.back_icon);
         groupTitle = (TextView) findViewById(R.id.group_chat_textview);
         messageText = (EditText) findViewById(R.id.editTextMessage);
 
@@ -84,39 +88,44 @@ public class GroupChatActivity extends AppCompatActivity {
         ref.orderByKey().equalTo(eventKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
-                groupTitle.setText(eg.getEventTitle());
 
-                switch (eg.getEventType()) {
-                    case "Food & Drink":
-                        groupIcon.setImageResource(R.drawable.food_and_drink);
-                        break;
-                    case "Exercise":
-                        groupIcon.setImageResource(R.drawable.exercise);
-                        break;
-                    case "Games":
-                        groupIcon.setImageResource(R.drawable.games);
-                        break;
-                    case "Hangout":
-                        groupIcon.setImageResource(R.drawable.hangout);
-                        break;
-                    case "Cinema":
-                        groupIcon.setImageResource(R.drawable.cinema);
-                        break;
-                    case "Concert":
-                        groupIcon.setImageResource(R.drawable.concert);
-                        break;
-                    case "Sports":
-                        groupIcon.setImageResource(R.drawable.sports);
-                        break;
-                    case "Party":
-                        groupIcon.setImageResource(R.drawable.party);
-                        break;
-                    case "Shopping":
-                        groupIcon.setImageResource(R.drawable.shopping);
-                        break;
-                    default:
-                        groupIcon.setImageResource(R.drawable.other);
+                try {
+                    EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+                    groupTitle.setText(eg.getEventTitle());
+
+                    switch (eg.getEventType()) {
+                        case "Food & Drink":
+                            groupIcon.setImageResource(R.drawable.food_and_drink);
+                            break;
+                        case "Exercise":
+                            groupIcon.setImageResource(R.drawable.exercise);
+                            break;
+                        case "Games":
+                            groupIcon.setImageResource(R.drawable.games);
+                            break;
+                        case "Hangout":
+                            groupIcon.setImageResource(R.drawable.hangout);
+                            break;
+                        case "Cinema":
+                            groupIcon.setImageResource(R.drawable.cinema);
+                            break;
+                        case "Concert":
+                            groupIcon.setImageResource(R.drawable.concert);
+                            break;
+                        case "Sports":
+                            groupIcon.setImageResource(R.drawable.sports);
+                            break;
+                        case "Party":
+                            groupIcon.setImageResource(R.drawable.party);
+                            break;
+                        case "Shopping":
+                            groupIcon.setImageResource(R.drawable.shopping);
+                            break;
+                        default:
+                            groupIcon.setImageResource(R.drawable.other);
+                    }
+                } catch (NoSuchElementException e) {
+                    Log.d("Catch: ", "NoSuchElementException triggered.");
                 }
 
             }
@@ -169,7 +178,15 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+        backIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
+
 
     @Override
     public void onBackPressed() {

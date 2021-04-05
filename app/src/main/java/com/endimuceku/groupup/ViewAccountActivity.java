@@ -54,10 +54,4 @@ public class ViewAccountActivity extends AppCompatActivity {
         startActivity(startLogInActivity);
     }
 
-
-    public void deleteAccountButtonClicked(View view) {
-        Intent startLogInActivity = new Intent(this, LogInActivity.class);
-        startLogInActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startLogInActivity);
-    }
 }
