@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+// Activity for displaying a group chat
 public class GroupChatActivity extends AppCompatActivity {
 
     private String eventKey;
@@ -61,19 +62,25 @@ public class GroupChatActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_group_chat);
 
+        // Initialise context
         context = getApplicationContext();
 
+        // Get the intent and Firebase Realtime Database event key
         Intent intent = getIntent();
         eventKey = intent.getStringExtra("eventKey");
 
+        // Initialise authentication and user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        // Initialise a new arraylist
         groupChatMessages = new ArrayList<>();
 
+        // Set up database reference
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
 
+        // Load displayed components
         toolbar = (Toolbar) findViewById(R.id.group_chat_toolbar);
         groupIcon = (ImageView) findViewById(R.id.groupChatIcon);
         sendMessageIcon = (ImageView) findViewById(R.id.sendMessageIcon);
@@ -81,14 +88,17 @@ public class GroupChatActivity extends AppCompatActivity {
         groupTitle = (TextView) findViewById(R.id.group_chat_textview);
         messageText = (EditText) findViewById(R.id.editTextMessage);
 
+        // Initialise recyclerview
         mGroupMessages = (RecyclerView) findViewById(R.id.message_recyclerview);
         mGroupMessages.setHasFixedSize(true);
         mGroupMessages.setLayoutManager(new LinearLayoutManager(context));
 
+        // Set the group chat title and icon
         ref.orderByKey().equalTo(eventKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                // try/catch statement to prevent application crash
                 try {
                     EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                     groupTitle.setText(eg.getEventTitle());
@@ -136,6 +146,7 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+        // Load messages from database and display them on the recyclerview
         ref.child(eventKey).child("messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -154,12 +165,15 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+        // Method which runs when the send message button is clicked, sends a new message
         sendMessageIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Load message
                 String text = messageText.getText().toString().trim();
+                // Checks if the message is empty
                 if (!TextUtils.isEmpty(text)) {
-                    // Implement Message Storing
+                    // Get current system time in string format
                     String timestamp = Long.toString(System.currentTimeMillis());
 
                     HashMap<String, Object> hashMap = new HashMap<>();
@@ -167,6 +181,7 @@ public class GroupChatActivity extends AppCompatActivity {
                     hashMap.put("message", text);
                     hashMap.put("timestamp", timestamp);
 
+                    // Add message data to database and reset text input form once message is sent
                     ref.child(eventKey).child("messages").child(timestamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -178,6 +193,7 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+        // Method which returns user to previous screen when back button is clicked
         backIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,7 +202,6 @@ public class GroupChatActivity extends AppCompatActivity {
         });
 
     }
-
 
     @Override
     public void onBackPressed() {

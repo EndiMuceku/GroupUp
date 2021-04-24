@@ -1,5 +1,6 @@
 package com.endimuceku.groupup;
 
+// Class for storing a group chat message
 public class GroupChatMessage {
 
     private String message, sender, timestamp;
@@ -12,6 +13,7 @@ public class GroupChatMessage {
 
     public GroupChatMessage() {}
 
+    // Getters
     public String getMessage() {
         return message;
     }

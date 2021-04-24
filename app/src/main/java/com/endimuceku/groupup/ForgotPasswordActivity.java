@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
+// Activity for resetting the user's password
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -25,21 +26,27 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
-        context = getApplicationContext();
 
+        // Initialise context and authentication
+        context = getApplicationContext();
         mAuth = FirebaseAuth.getInstance();
 
     }
 
+    // Method that runs when the Reset Password button is clicked, sends an email link to reset the user's password
     public void submitPasswordRequest(View view) {
+        // Get input data
         mEmailInput = (TextInputLayout) findViewById(R.id.email_input_fp);
         email = mEmailInput.getEditText().getText().toString();
 
+        // Check if the email address is valid
         if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            // Send password reset email
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            // Display a message if the task is or is not successful
                             if (task.isSuccessful()) {
                                 Toast.makeText(context, "Password reset email sent.", Toast.LENGTH_LONG).show();
                             } else {
@@ -48,6 +55,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         }
                     });
         } else {
+            // Display an error message if the email is not valid
             mEmailInput.setError("Invalid email address.");
         }
 

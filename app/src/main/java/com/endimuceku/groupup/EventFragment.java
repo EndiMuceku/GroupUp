@@ -34,9 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
 import java.util.Map;
 
+// Fragment for the events tab of the main activity
 public class EventFragment extends Fragment {
 
     private Activity activity;
@@ -50,9 +50,9 @@ public class EventFragment extends Fragment {
     private EventGroupAdapter eventGroupAdapter;
     private DatabaseReference ref;
 
-    private MaterialButton joinGroupButton;
-    private MaterialButton leaveGroupButton;
-    private MaterialButton deleteGroupButton;
+    private MaterialButton joinEventButton;
+    private MaterialButton leaveEventButton;
+    private MaterialButton deleteEventButton;
 
     private SearchView searchView;
     private AutoCompleteTextView eventType;
@@ -61,18 +61,21 @@ public class EventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Initialise activity, context, authentication and user
         activity = getActivity();
         context = getContext();
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        // Set up database reference
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
 
+        // Initialise intent and view
         Intent startCreateEventActivityIntent = new Intent(activity, CreateEventActivity.class);
-
         View view = inflater.inflate(R.layout.fragment_event, container, false);
 
+        // Create a clickable icon which leads to the activity for creating new events
         ImageView createEventIcon = (ImageView) view.findViewById(R.id.createEventImageView);
         createEventIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,14 +84,17 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Initialise recyclerview
         mEventGroupList = (RecyclerView) view.findViewById(R.id.eventRecyclerView);
         mEventGroupList.setHasFixedSize(true);
         mEventGroupList.setLayoutManager(new LinearLayoutManager(context));
 
+        // Set recyclerview adapter
         options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(ref, EventGroup.class).build();
         eventGroupAdapter = new EventGroupAdapter(options);
         mEventGroupList.setAdapter(eventGroupAdapter);
 
+        // Create a search bar which updates a query when text is typed into it
         searchView = (SearchView) view.findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -104,6 +110,7 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Initialise event type drop down filter
         eventType = (AutoCompleteTextView) view.findViewById(R.id.event_type_filter_ed);
 
         String[] dropDownOptions =
@@ -116,6 +123,7 @@ public class EventFragment extends Fragment {
         eventType.setAdapter(adapter);
         eventType.setThreshold(1);
 
+        // Update a query when a drop down option is selected
         eventType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -133,6 +141,7 @@ public class EventFragment extends Fragment {
                         .setLifecycleOwner(getViewLifecycleOwner())
                         .build();
 
+                // Reset adapter with new query
                 EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(filterOptions);
                 mEventGroupList.setAdapter(eventGroupSearchAdapter);
                 eventGroupSearchAdapter.notifyDataSetChanged();
@@ -143,9 +152,11 @@ public class EventFragment extends Fragment {
         return view;
     }
 
+    // Updates the list of events to match the search term
     private void search(String s) {
         Log.d("Search term:", s);
 
+        // Check if search query is empty
         Query query;
         if(!s.isEmpty()){
             query = ref.orderByChild("eventTitle").startAt(s).endAt(s + "\uf8ff");
@@ -158,6 +169,7 @@ public class EventFragment extends Fragment {
                 .setLifecycleOwner(this)
                 .build();
 
+        // Reset adapter with new query
         EventGroupAdapter eventGroupSearchAdapter = new EventGroupAdapter(searchOptions);
         mEventGroupList.setAdapter(eventGroupSearchAdapter);
         eventGroupSearchAdapter.notifyDataSetChanged();
@@ -177,6 +189,7 @@ public class EventFragment extends Fragment {
         eventGroupAdapter.stopListening();
     }
 
+    // Adapter for event data from the database
     public class EventGroupAdapter extends FirebaseRecyclerAdapter<EventGroup, EventGroupAdapter.EventGroupViewHolder> {
 
         public EventGroupAdapter(@NonNull FirebaseRecyclerOptions<EventGroup> options) {
@@ -185,6 +198,7 @@ public class EventFragment extends Fragment {
 
         @Override
         protected void onBindViewHolder(@NonNull EventGroupAdapter.EventGroupViewHolder holder, int position, @NonNull EventGroup model) {
+            // Update card with information from the database
             holder.setEventTitle(model.getEventTitle());
             holder.setEventDescription(model.getEventDescription());
             holder.setEventDateAndTime(model.getEventDate(), model.getEventTime());
@@ -195,11 +209,13 @@ public class EventFragment extends Fragment {
             holder.setAddressLine3(model.getAddressLine3());
             holder.setEventType(model.getEventType());
 
-            joinGroupButton = holder.itemView.findViewById(R.id.join_group_button);
-            leaveGroupButton = holder.itemView.findViewById(R.id.leave_group_button);
-            deleteGroupButton = holder.itemView.findViewById(R.id.delete_group_button);
+            // Initialise event buttons
+            joinEventButton = holder.itemView.findViewById(R.id.join_group_button);
+            leaveEventButton = holder.itemView.findViewById(R.id.leave_group_button);
+            deleteEventButton = holder.itemView.findViewById(R.id.delete_group_button);
 
-            joinGroupButton.setOnClickListener(new View.OnClickListener() {
+            // Join the event when the button is clicked
+            joinEventButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
@@ -225,7 +241,8 @@ public class EventFragment extends Fragment {
                 }
             });
 
-            leaveGroupButton.setOnClickListener(new View.OnClickListener() {
+            // Leave the event when the button is clicked
+            leaveEventButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
@@ -251,7 +268,8 @@ public class EventFragment extends Fragment {
                 }
             });
 
-            deleteGroupButton.setOnClickListener(new View.OnClickListener() {
+            // Delete the event when the button is clicked
+            deleteEventButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Query query = ref.orderByChild("eventTitle").equalTo(model.getEventTitle());
@@ -274,6 +292,7 @@ public class EventFragment extends Fragment {
                 }
             });
 
+            // Update card image based on event type
             switch (model.getEventType()) {
                 case "Food & Drink":
                     holder.setImage(R.drawable.food_and_drink);
@@ -310,6 +329,7 @@ public class EventFragment extends Fragment {
         @NonNull
         @Override
         public EventGroupAdapter.EventGroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            // Get card layout from xml file
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_event_group, parent, false);
             return new EventGroupAdapter.EventGroupViewHolder(view);
         }
@@ -320,6 +340,7 @@ public class EventFragment extends Fragment {
                 super(itemView);
             }
 
+            // Setters
             public void setEventTitle(String eventTitle) {
                 TextView eventTitleTextView = (TextView) itemView.findViewById(R.id.event_title_card_textview);
                 eventTitleTextView.setText(eventTitle);

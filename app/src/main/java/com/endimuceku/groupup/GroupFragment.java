@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+// Fragment for the groups tab of the main activity
 public class GroupFragment extends Fragment {
 
     private Activity activity;
@@ -52,6 +53,7 @@ public class GroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Initialise activity, context, authentication and user
         activity = getActivity();
         context = getContext();
         mAuth = FirebaseAuth.getInstance();
@@ -60,6 +62,7 @@ public class GroupFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_group, container, false);
 
+        // Create a clickable account settings icon which directs the user to the view account details activity
         accountSettingsIcon = (ImageView) view.findViewById(R.id.accountSettingsIcon);
         accountSettingsIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,13 +72,16 @@ public class GroupFragment extends Fragment {
             }
         });
 
+        // Set up database reference
         eventsRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
 
+        // Initialise recyclerview
         mEventGroupChats = (RecyclerView) view.findViewById(R.id.groupChatRecyclerView);
         mEventGroupChats.setHasFixedSize(true);
         mEventGroupChats.setLayoutManager(new LinearLayoutManager(context));
 
+        // Set adapter
         options = new FirebaseRecyclerOptions.Builder<EventGroup>().setQuery(eventsRef, EventGroup.class).build();
         groupChatAdapter = new GroupChatAdapter(options);
         mEventGroupChats.setAdapter(groupChatAdapter);
@@ -97,6 +103,7 @@ public class GroupFragment extends Fragment {
         groupChatAdapter.stopListening();
     }
 
+    // Adapter for event data in the database
     public class GroupChatAdapter extends FirebaseRecyclerAdapter<EventGroup, GroupChatAdapter.EventGroupViewHolder> {
 
         private ArrayList<EventGroup> eventGroupList;
@@ -108,6 +115,7 @@ public class GroupFragment extends Fragment {
 
         @Override
         protected void onBindViewHolder(@NonNull GroupChatAdapter.EventGroupViewHolder holder, int position, @NonNull EventGroup model) {
+            // Hide group chats which the user is not a member of
             if (!model.isMember(user.getUid())) {
                 holder.itemView.setVisibility(View.GONE);
                 holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
@@ -116,12 +124,14 @@ public class GroupFragment extends Fragment {
                 holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 holder.setEventTitle(model.getEventTitle());
 
+                // Load group chat data
                 Query query = eventsRef.orderByChild("eventTitle").equalTo(model.getEventTitle());
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
                         String key = snapshot.getChildren().iterator().next().getKey();
+                        // Get last sent message from the database
                         eventsRef.child(key).child("messages").limitToLast(1).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -130,6 +140,7 @@ public class GroupFragment extends Fragment {
                                     String sender = "" + ds.child("sender").getValue();
                                     String timestamp = "" + ds.child("timestamp").getValue();
 
+                                    // Format date and time data and convert to string
                                     Calendar cal = Calendar.getInstance(Locale.ENGLISH);
                                     cal.setTimeInMillis(Long.parseLong(timestamp));
                                     String timeS = DateFormat.format("dd/MM/yy hh:mm aa", cal).toString();
@@ -137,8 +148,11 @@ public class GroupFragment extends Fragment {
                                     holder.setMessage(message);
                                     holder.setTime(timeS);
 
+                                    // Set up database reference
                                     usersRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                                             .getReference().child("users");
+
+                                    // Load sender of latest message
                                     usersRef.orderByKey().equalTo(sender).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -170,6 +184,7 @@ public class GroupFragment extends Fragment {
                     }
                 });
 
+                // Set group chat icon
                 switch (model.getEventType()) {
                     case "Food & Drink":
                         holder.setImage(R.drawable.food_and_drink);
@@ -202,6 +217,7 @@ public class GroupFragment extends Fragment {
                         holder.setImage(R.drawable.other);
                 }
 
+                // Start a group chat activity if group chat card is clicked
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -241,6 +257,7 @@ public class GroupFragment extends Fragment {
                 super(itemView);
             }
 
+            // Setters
             public void setEventTitle(String eventTitle) {
                 TextView eventTitleTextView = (TextView) itemView.findViewById(R.id.group_chat_title);
                 eventTitleTextView.setText(eventTitle);

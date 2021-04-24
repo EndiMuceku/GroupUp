@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+// Activity for creating new accounts
 public class CreateAccountActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -42,9 +43,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     private String password2;
 
     private Context context;
-
     private DatabaseReference ref;
-
     private Map<String, String> userHashMap;
 
     @Override
@@ -52,16 +51,19 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
+        // Initialise authentication and context
         mAuth = FirebaseAuth.getInstance();
-
         context = getApplicationContext();
 
+        // Set up database reference
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("users");
 
     }
 
+    // Method which runs when the Create Account button is clicked, responsible for creating a new account for the user
     public void submitAccountCreationRequest(View view) {
+        // Get data from input forms
         mEmailInput = (TextInputLayout) findViewById(R.id.email_input_ca);
         email = mEmailInput.getEditText().getText().toString();
 
@@ -74,6 +76,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         mPassword2Input = (TextInputLayout) findViewById(R.id.password_reinput_ca);
         password2 = mPassword2Input.getEditText().getText().toString();
 
+        // Validate data and then create a new account for the user
         if(password.equals(password2) && password.length() >= 8 && username.length() >= 5 && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -93,9 +96,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                 if (task.isSuccessful()) {
                                                     String name = user.getDisplayName();
 
+                                                    // Display a message to the user that sign in was successful
                                                     Toast.makeText(context, "Successfully created account for user " + name + ", please verify your email before signing in.", Toast.LENGTH_SHORT).show();
                                                     mAuth.signOut();
 
+                                                    // Add user to the Firebase database
                                                     ref.child(user.getUid()).setValue(name);
 
                                                 }
@@ -110,6 +115,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                         }
                     });
+        // Display error messages if the input data isn't valid
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             mEmailInput.setError("Invalid e-mail address format.");
         } else if (username.length() < 5) {

@@ -24,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 import java.util.HashMap;
 
+// Activity for creating new events
 public class CreateEventActivity extends AppCompatActivity {
 
     private DatePickerDialog datePicker;
@@ -46,15 +47,18 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
+        // Initialise context, authentication and user
         context = getApplicationContext();
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        // Set up database references
         eventsRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("events");
         groupsRef = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("groups");
 
+        // Code implementation for date picker
         date = (TextInputEditText) findViewById(R.id.event_date_ed);
         date.setFocusable(false);
         date.setClickable(true);
@@ -87,6 +91,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         });
 
+        // Code implementation for time picker
         time = (TextInputEditText) findViewById(R.id.event_time_ed);
         time.setFocusable(false);
         time.setClickable(true);
@@ -136,6 +141,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         });
 
+        // Code for event type drop down picker
         type = (AutoCompleteTextView) findViewById(R.id.event_type_ed);
 
         String[] dropDownOptions =
@@ -148,8 +154,10 @@ public class CreateEventActivity extends AppCompatActivity {
         type.setThreshold(1);
     }
 
+    // Method which runs when the create event button is clicked, responsible for creating a new event
     public void createEventButtonClicked(View view) {
 
+        // Get data from the input forms
         TextInputLayout mEventTitle = (TextInputLayout) findViewById(R.id.event_title);
         TextInputLayout mEventDescription = (TextInputLayout) findViewById(R.id.event_description);
         TextInputLayout mEventDate = (TextInputLayout) findViewById(R.id.event_date);
@@ -172,6 +180,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String location = mLocation.getEditText().getText().toString();
         String eventType = mEventType.getEditText().getText().toString();
 
+        // Display error messages if input data is not valid
         if (eventTitle.isEmpty()) {
 
             mEventTitle.setError("You need to enter an event title.");
@@ -198,6 +207,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         } else {
 
+            // Create new event in the database
             EventGroup eventGroup = new EventGroup(eventTitle, eventDescription, eventDate, eventTime, addressLine1, addressLine2,
                     addressLine3, postcode, location, eventType, user.getUid());
 
@@ -207,32 +217,8 @@ public class CreateEventActivity extends AppCompatActivity {
             newEventsRef.setValue(eventGroup);
             newEventsRef.push();
 
-            /*
-            HashMap<String, String> groupHashMap = new HashMap<>();
-            groupHashMap.put("EventGroup ID", newEventsRef.getKey());
-            groupHashMap.put("Group Title", eventTitle);
-            groupHashMap.put("Group Description", eventDescription);
-            groupHashMap.put("Creator", user.getUid());
-
-            DatabaseReference newGroupsRef = groupsRef.push();
-            newGroupsRef.setValue(groupHashMap);
-            newGroupsRef.push();
-
-            HashMap<String, String> userHashMap = new HashMap<>();
-            userHashMap.put("User ID", user.getUid());
-
-            String groupKey = newGroupsRef.getKey();
-
-            Log.d("Group Key: ", newGroupsRef.getKey());
-
-            DatabaseReference userInGroupsRef =
-                    FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
-                    .getReference().child("groups").child(groupKey).child("users");
-
-            userInGroupsRef.setValue(userHashMap);
-            userInGroupsRef.push();
-            */
-            Toast.makeText(context, "EventGroup successfully created: " + eventGroup.getEventTitle(), Toast.LENGTH_LONG).show();
+            // Display a message informing the user the new event was successfully created
+            Toast.makeText(context, "Event successfully created: " + eventGroup.getEventTitle(), Toast.LENGTH_LONG).show();
             finish();
 
         }

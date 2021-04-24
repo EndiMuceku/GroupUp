@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+// Adapter for group chat message data from the database
 public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessageAdapter.MessageViewHolder>{
 
     private static final int MSG_OTHER = 0;
@@ -40,6 +41,7 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
         this.context = context;
         this.groupChatMessages = groupChatMessages;
 
+        // Initialise authentication and user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
     }
@@ -48,6 +50,7 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
+        // Determine whether to display messages as from the user or to the user
         if (viewType == MSG_OTHER){
             view = LayoutInflater.from(context).inflate(R.layout.third_person_messages, parent, false);
         } else {
@@ -58,22 +61,27 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        // Load message
         GroupChatMessage groupChatMessage = groupChatMessages.get(position);
 
         String message = groupChatMessage.getMessage();
         String senderID = groupChatMessage.getSender();
         String timestamp = groupChatMessage.getTimestamp();
 
+        // Format date and time data
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(Long.parseLong(timestamp));
         String time = DateFormat.format("dd/MM/yy hh:mm aa", cal).toString();
 
+        // Bind to message
         holder.message.setText(message);
         holder.timestamp.setText(time);
 
-        // get sender display name
+        // Set up database reference
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("users");
+
+        // Get the sender name
         ref.orderByKey().equalTo(senderID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -121,6 +129,4 @@ public class GroupChatMessageAdapter extends RecyclerView.Adapter<GroupChatMessa
 
         }
     }
-
-
 }

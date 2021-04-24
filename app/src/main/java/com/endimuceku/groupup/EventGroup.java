@@ -3,6 +3,7 @@ package com.endimuceku.groupup;
 import java.util.HashMap;
 import java.util.Map;
 
+// Class for storing event data
 public class EventGroup {
 
     private String eventTitle;
@@ -38,6 +39,7 @@ public class EventGroup {
 
     public EventGroup() {}
 
+    // Getters and setters
     public String getEventTitle() {
         return eventTitle;
     }
@@ -90,6 +92,7 @@ public class EventGroup {
         return users;
     }
 
+    // Check if user is the event creator
     public boolean isCreator(String userID) {
         if (userID.equals(creator)) {
             return true;
@@ -98,6 +101,7 @@ public class EventGroup {
         }
     }
 
+    // Check if user is a member of the event
     public boolean isMember(String userID) {
         if(users.containsKey(userID)){
            return true;
@@ -106,10 +110,12 @@ public class EventGroup {
         }
     }
 
+    // Add the user to the group
     public void addUser(String userID, String userEmail){
         users.put(userID, userEmail);
     }
 
+    // Remove the user from the group
     public void removeUser(String userID) {
         users.remove(userID);
     }

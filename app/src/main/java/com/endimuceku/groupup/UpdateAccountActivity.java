@@ -28,6 +28,7 @@ import org.w3c.dom.Text;
 import java.util.HashMap;
 import java.util.Map;
 
+// Activity for updating account details
 public class UpdateAccountActivity extends AppCompatActivity {
 
     private String username;
@@ -47,21 +48,28 @@ public class UpdateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_account);
 
+        // Initialise authentication and user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        // Load user's display name
         mUsername = (TextInputLayout) findViewById(R.id.display_name_input);
         mUsername.getEditText().setText(user.getDisplayName());
 
+        // Set up database reference
         ref = FirebaseDatabase.getInstance("https://groupup-115e1-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference().child("users");
         ref.keepSynced(true);
 
     }
 
+    // Updates the user's username when the update account details button is clicked
     public void updateAccountButtonClicked(View view) {
+        // Get username from input form
         username = mUsername.getEditText().getText().toString();
+        // Checks if username has been changed
         if (!username.equals(user.getDisplayName())) {
+            // Change the user's username
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(username)
                     .build();
@@ -74,6 +82,7 @@ public class UpdateAccountActivity extends AppCompatActivity {
                 }
             });
 
+            // Display a message telling the user that their username has been changed
             Toast.makeText(this, "Username updated.", Toast.LENGTH_SHORT).show();
         }
         finish();

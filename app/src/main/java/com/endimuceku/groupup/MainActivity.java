@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
+// Activity for the main pages of the application
 public class MainActivity extends AppCompatActivity {
 
     @Override

@@ -16,6 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+// Activity for logging in
 public class LogInActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -33,32 +34,39 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Initialise authentication and context
         mAuth = FirebaseAuth.getInstance();
-
         context = getApplicationContext();
 
     }
 
+    // Starts the create account activity when the highlighted text for creating a new account is clicked
     public void startCreateAccountActivity(View view) {
         Intent createAccountActivityIntent = new Intent(this, CreateAccountActivity.class);
         startActivity(createAccountActivityIntent);
     }
 
+    // Starts the reset password activity when the highlighted text for resetting the user's password is clicked
     public void startForgotPasswordActivity(View view) {
         Intent forgotPasswordActivityIntent = new Intent(this, ForgotPasswordActivity.class);
         startActivity(forgotPasswordActivityIntent);
     }
 
+    // Method that logs in the user when the log in button is pressed
     public void logInButtonClicked(View view) {
+        // Load input data
         mEmailInput = (TextInputLayout) findViewById(R.id.email_input);
         email = mEmailInput.getEditText().getText().toString();
 
         mPasswordInput = (TextInputLayout) findViewById(R.id.password_input);
         password = mPasswordInput.getEditText().getText().toString();
 
+        // Create new intent
         Intent eventActivityIntent = new Intent(this, MainActivity.class);
 
+        // Check if the email address is valid
         if(android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            // Sign the user in
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -66,10 +74,13 @@ public class LogInActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = mAuth.getCurrentUser();
+                                // Check if the user's email is verified
                                 if (user.isEmailVerified()){
+                                    // Start the main activity
                                     startActivity(eventActivityIntent);
                                     finish();
                                 } else {
+                                    // Display a message if the user hasn't verified their email
                                     Toast.makeText(context, "Authentication failed. Please verify your email first.",
                                             Toast.LENGTH_LONG).show();
                                 }
@@ -83,6 +94,7 @@ public class LogInActivity extends AppCompatActivity {
                         }
                     });
         } else {
+            // Display an error message if the user's email address is not valid
             mEmailInput.setError("Invalid e-mail address.");
         }
 

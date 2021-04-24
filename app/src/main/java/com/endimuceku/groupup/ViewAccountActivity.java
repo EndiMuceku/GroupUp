@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+// Activity for viewing account details
 public class ViewAccountActivity extends AppCompatActivity {
 
     private String email;
@@ -28,9 +29,11 @@ public class ViewAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_account);
 
+        // Initialise authentication and user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        // Load details
         mEmail = findViewById(R.id.view_account_email);
         mUsername = findViewById(R.id.view_account_display_name);
 
@@ -42,11 +45,13 @@ public class ViewAccountActivity extends AppCompatActivity {
 
     }
 
+    // Starts the update account activity when the change account details button is clicked
     public void changeAccountDetailsButtonClicked(View view) {
         Intent startUpdateAccountActivity = new Intent(this, UpdateAccountActivity.class);
         startActivity(startUpdateAccountActivity);
     }
 
+    // Logs the user out of the application when the log out button is clicked
     public void logOutButtonClicked(View view) {
         mAuth.signOut();
         Intent startLogInActivity = new Intent(this, LogInActivity.class);
