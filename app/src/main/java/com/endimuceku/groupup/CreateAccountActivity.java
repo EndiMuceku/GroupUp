@@ -97,7 +97,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                     String name = user.getDisplayName();
 
                                                     // Display a message to the user that sign in was successful
-                                                    Toast.makeText(context, "Successfully created account for user " + name + ", please verify your email before signing in.", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(context, "Successfully created account for user " + name
+                                                            + ", please verify your email before signing in.", Toast.LENGTH_SHORT).show();
                                                     mAuth.signOut();
 
                                                     // Add user to the Firebase database
