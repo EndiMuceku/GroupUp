@@ -228,7 +228,7 @@ public class EventFragment extends Fragment {
                                 Toast.makeText(context, "You have already joined this group.", Toast.LENGTH_SHORT).show();
                             } else {
                                 Map<String, String> hashMap = eg.getUsers();
-                                hashMap.put(user.getUid(), user.getEmail());
+                                hashMap.put(user.getUid(), user.getDisplayName());
                                 ref.child(key).child("users").setValue(hashMap);
                                 Toast.makeText(context, "Group " + model.getEventTitle() + " joined.", Toast.LENGTH_SHORT).show();
                             }

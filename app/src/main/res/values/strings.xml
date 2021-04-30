@@ -50,4 +50,5 @@
     <string name="message">No messages</string>
     <string name="time_sent"></string>
     <string name="name_of_sender"></string>
+    <string name="creator">Creator</string>
 </resources>

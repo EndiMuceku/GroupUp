@@ -2,14 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="b"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f6"
-    tools:context=".GroupChatActivity">
+    tools:context=".GroupChatParticipantsActivity">
 
     <android.widget.Toolbar
-        android:id="@+id/group_chat_toolbar"
+        android:id="@+id/group_chat_participants_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -29,7 +27,7 @@
             tools:layout_editor_absoluteY="8dp">
 
             <ImageView
-                android:id="@+id/back_icon"
+                android:id="@+id/back_icon_2"
                 android:layout_width="36dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
@@ -43,7 +41,7 @@
                 app:cardCornerRadius="27dp">
 
                 <ImageView
-                    android:id="@+id/groupChatIcon"
+                    android:id="@+id/groupChatParticipantsIcon"
                     android:layout_width="54dp"
                     android:layout_height="54dp"
                     android:scaleType="centerCrop"
@@ -58,7 +56,7 @@
                 tools:layout_editor_absoluteY="8dp">
 
                 <TextView
-                    android:id="@+id/group_chat_textview"
+                    android:id="@+id/group_chat_participants_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -66,60 +64,38 @@
                     android:text="@string/event_title"
                     android:textColor="@color/white"
                     android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:onClick="launchGroupChatParticipantsActivity"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>
 
     </android.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:text="Participants"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_chat_participants_toolbar" />
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/message_recyclerview"
-        android:layout_width="match_parent"
+        android:id="@+id/participants_recyclerview"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_chat_toolbar"
-        tools:listitem="@layout/third_person_messages">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/card_participants">
 
-        <EditText
-            android:id="@+id/editTextMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/type_a_message"
-            android:inputType="textPersonName" />
-
-        <ImageView
-            android:id="@+id/sendMessageIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/send_icon" />
-
-    </LinearLayout>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
