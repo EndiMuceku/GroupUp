@@ -77,21 +77,29 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
                 // try/catch statement to prevent application crash
                 try {
                     EventGroup eg = snapshot.getChildren().iterator().next().getValue(EventGroup.class);
+
+                    // Check if user is the creator
                     if (eg.isCreator(user.getUid())) {
+                        // Check if participant is the creator
                         if (!eg.isCreator(userID)) {
+                            // Listen for kick button clicks
                             holder.kickButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    // Kick user on button click
                                     ref.child(eventKey).child("users").child(userID).removeValue();
                                     Toast.makeText(context, "User " + displayName + " kicked from event.", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         } else {
+                            // Display creator and hide kick button
                             holder.creator.setText(R.string.creator);
                             holder.kickButton.setVisibility(View.GONE);
                         }
                     } else {
+                        // Hide kick button
                         holder.kickButton.setVisibility(View.GONE);
+                        // If the participant is the creator, display creator
                         if (eg.isCreator(userID)) {
                             holder.creator.setText(R.string.creator);
                         }
